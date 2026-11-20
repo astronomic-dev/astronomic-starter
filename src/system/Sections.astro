@@ -1,0 +1,74 @@
+---
+/**
+ * The starter's own blocks with the site's content, for /system/sections. Data loads the way the pages load it. A
+ * block with no content to show is left out. Kit parts with fixed words (the home sections) are on the home screen.
+ */
+import IndexList from "@astronomic/ui/components/IndexList.astro";
+import PostGrid from "@astronomic/ui/components/PostGrid.astro";
+import SeriesList from "@astronomic/ui/components/SeriesList.astro";
+import { useContent } from "~/content";
+import KitImage from "../components/KitImage.astro";
+import KitPreview from "../components/KitPreview.astro";
+import LookCode from "../components/LookCode.astro";
+import LookSwitch from "../components/LookSwitch.astro";
+import PostArchive from "../components/PostArchive.astro";
+import { categoryHref, guideHref, postItem, termLinks } from "../utils/posts";
+
+const content = useContent(Astro);
+const [{ items: posts }, categories, { items: guides }] = await Promise.all([content.posts.list({ limit: 3 }), content.terms("category"), content.guides.list()]);
+const series = guides[0]?.series.ref;
+const parts = series ? guides.filter((g) => g.series.ref.slug === series.slug) : [];
+const label = "mb-4 text-small text-muted";
+const block = "border-t-ui border-solid border-border pt-6";
+---
+
+<div class="grid gap-16">
+	<section class={block}>
+		<p class={label}>KitPreview · src/components/KitPreview.astro (the home hero's picture of the kit: Card, Badge, Field, Input, Button, Avatar)</p>
+		<KitPreview class="max-w-md" />
+	</section>
+	<section class={block}>
+		<p class={label}>The look demo · src/components/LookSwitch.astro and LookCode.astro (a demo switch; the real look is one line in src/styles/global.css)</p>
+		<div class="grid max-w-xl gap-blocks">
+			<LookSwitch />
+			<LookCode />
+		</div>
+	</section>
+	{
+		posts.length > 0 && (
+			<section class={block}>
+				<p class={label}>PostArchive · src/components/PostArchive.astro (kit ArticleHeader, FilterNav, PostGrid, Pagination)</p>
+				<PostArchive
+					title="Blog"
+					text="News, notes and how-tos, newest first."
+					posts={posts}
+					empty="No posts yet."
+					filter={[{ label: "All posts", href: "/posts", current: true }, ...termLinks(categories, categoryHref)]}
+					page={1}
+					pages={2}
+					href={(n) => (n === 1 ? "/posts" : `/posts/page/${n}`)}
+					headingTag="h2"
+				/>
+			</section>
+		)
+	}
+	{
+		posts.length > 0 && (
+			<section class={block}>
+				<p class={label}>Latest posts · kit PostGrid with KitImage (src/components/KitImage.astro)</p>
+				<PostGrid heading="From the blog" items={posts.map(postItem)} imageComponent={KitImage} />
+			</section>
+		)
+	}
+	{
+		parts.length > 0 && series && (
+			<section class={block}>
+				<p class={label}>Guides · kit IndexList and SeriesList</p>
+				<IndexList heading={series.title} items={parts.map((g) => ({ label: g.title, href: guideHref(g.slug), meta: `Part ${g.series.part}` }))} />
+				<div class="mt-blocks max-w-sm">
+					<SeriesList title={series.title} parts={parts.map((g, i) => ({ title: g.title, href: guideHref(g.slug), current: i === 0 }))} headingTag="h3" />
+				</div>
+			</section>
+		)
+	}
+</div>

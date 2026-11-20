@@ -1,0 +1,56 @@
+---
+/** The blog: every post, newest first, with the category filter, then the newsletter sign-up (src/site.ts). Only the
+ * first page has the sign-up; later pages, categories and tags do not. A live site with the form on a placeholder
+ * address has none (src/utils/placeholders.ts). The sign-up is left out of the parity test's page text: a static build and
+ * a production server differ here by design, in a copy with no demo-brand folder. */
+import Container from "@astronomic/ui/components/Container.astro";
+import NewsletterInline from "@astronomic/ui/components/NewsletterInline.astro";
+import { useContent } from "~/content";
+import PostArchive from "../../components/PostArchive.astro";
+import Base from "../../layouts/Base.astro";
+import { blog, forms } from "../../site";
+import { siteForm } from "../../utils/placeholders";
+import { categoryHref, termLinks } from "../../utils/posts";
+import { siteOrigin } from "../../utils/public-pages";
+import { PER_PAGE, pageHref } from "../../utils/routes";
+
+const content = useContent(Astro);
+const [{ items: posts }, count, categories] = await Promise.all([content.posts.list({ limit: PER_PAGE }), content.posts.count(), content.terms("category")]);
+const form = siteForm("forms.newsletter", forms.newsletter.action, siteOrigin(Astro));
+---
+
+<Base title="Blog" card>
+	<PostArchive
+		title="Blog"
+		text="News, notes and how-tos, newest first."
+		posts={posts}
+		empty="No posts yet."
+		filter={[{ label: "All posts", href: "/posts", current: true }, ...termLinks(categories, categoryHref)]}
+		page={1}
+		pages={Math.max(1, Math.ceil(count / PER_PAGE))}
+		href={(n) => (n === 1 ? "/posts" : pageHref("/posts/page", n))}
+	/>
+	{
+		form && (
+			<Container>
+				<NewsletterInline
+					data-parity-skip
+					heading={blog.newsletter.heading}
+					text={blog.newsletter.text}
+					tone="band"
+					class="mt-section"
+					form={{
+						...form,
+						emailName: forms.newsletter.emailName,
+						honeypot: forms.honeypot,
+						emailLabel: blog.newsletter.emailLabel,
+						emailPlaceholder: blog.newsletter.emailPlaceholder,
+						submitLabel: blog.newsletter.submitLabel,
+					}}
+				>
+					{form.enhance && <noscript slot="note">{forms.demoSent}</noscript>}
+				</NewsletterInline>
+			</Container>
+		)
+	}
+</Base>

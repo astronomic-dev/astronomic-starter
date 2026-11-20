@@ -1,0 +1,8 @@
+/* Ink: square corners, heavy borders, hard offset shadows, Newsreader over Libre Franklin. Turn it on in src/styles/global.css. */
+@import "@astronomic/ui/presets/ink.css";
+
+/* The preset names its faces; Astro's font API serves them as --font-newsreader and --font-libre-franklin (astro.config.mjs). */
+:root {
+  --ui-font-display: var(--font-newsreader, "Newsreader", ui-serif, Georgia, serif);
+  --ui-font-body: var(--font-libre-franklin, "Libre Franklin", ui-sans-serif, system-ui, sans-serif);
+}

@@ -1,0 +1,48 @@
+---
+/**
+ * The hero's kit preview: a small card built from real kit parts (Badge, Field, Input, Button, Avatar, a stat), in
+ * whatever look the site has, light or dark. It is a picture of the parts, not a form: inert and hidden from a screen
+ * reader, so it adds no tab stops and no second "Subscribe". Its heading is a paragraph styled as a subhead, so it stays
+ * out of the page's outline. The words are in src/site.ts (home.hero.preview). Replace it with a picture of your
+ * product, or remove it.
+ */
+import Avatar from "@astronomic/ui/components/Avatar.astro";
+import Badge from "@astronomic/ui/components/Badge.astro";
+import Button from "@astronomic/ui/components/Button.astro";
+import Card from "@astronomic/ui/components/Card.astro";
+import Field from "@astronomic/ui/components/Field.astro";
+import Input from "@astronomic/ui/components/Input.astro";
+import { home } from "../site";
+
+interface Props {
+	class?: string;
+}
+
+const { class: className } = Astro.props;
+const p = home.hero.preview;
+---
+
+<div data-kit-preview inert aria-hidden="true" class:list={["grid min-w-0 gap-cards", className]}>
+	<Card>
+		<Badge status="positive" class="self-start">{p.badge}</Badge>
+		<p class="m-0 text-subhead heading-face text-balance">{p.heading}</p>
+		<p class="m-0 text-body text-muted">{p.text}</p>
+		<Field label={p.emailLabel} for="kit-preview-email">
+			<Input id="kit-preview-email" type="email" placeholder={p.emailPlaceholder} tabindex="-1" />
+		</Field>
+		<div class="flex flex-wrap gap-3">
+			<Button tabindex="-1">{p.submitLabel}</Button>
+			<Button variant="secondary" tabindex="-1">{p.secondaryLabel}</Button>
+		</div>
+	</Card>
+	<div class="grid grid-cols-2 gap-cards">
+		<Card class="content-start gap-1">
+			<span class="text-stat tabular-nums display-face">{p.stat.value}</span>
+			<span class="text-small text-muted">{p.stat.label}</span>
+		</Card>
+		<Card class="flex-row items-center">
+			<Avatar name={p.person} size="md" decorative />
+			<span class="min-w-0 text-small text-muted">{p.person}</span>
+		</Card>
+	</div>
+</div>

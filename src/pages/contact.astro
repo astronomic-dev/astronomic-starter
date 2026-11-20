@@ -1,0 +1,52 @@
+---
+/**
+ * Contact: the "contact" page entry's text, then the details beside the message form (src/site.ts). On a live site, a form
+ * or an email on a placeholder address is left out (src/utils/placeholders.ts): the page shows what is left, or says it is
+ * still being set up. That part is left out of the parity test's page text: a static build and a production server differ
+ * here by design, in a copy with no demo-brand folder.
+ */
+import ArticleHeader from "@astronomic/ui/components/ArticleHeader.astro";
+import Contact from "@astronomic/ui/components/Contact.astro";
+import ContactInfo from "@astronomic/ui/components/ContactInfo.astro";
+import ContactSplit from "@astronomic/ui/components/ContactSplit.astro";
+import Container from "@astronomic/ui/components/Container.astro";
+import MessageForm from "@astronomic/ui/components/MessageForm.astro";
+import Prose from "@astronomic/ui/components/Prose.astro";
+import { useContent } from "~/content";
+import RichText from "../components/RichText.astro";
+import Base from "../layouts/Base.astro";
+import { contact, forms } from "../site";
+import { siteEmail, siteForm } from "../utils/placeholders";
+import { siteOrigin } from "../utils/public-pages";
+
+const page = await useContent(Astro).pages.get("contact");
+if (!page) {
+	return Astro.rewrite("/404");
+}
+const origin = siteOrigin(Astro);
+const form = siteForm("forms.contact", forms.contact.action, origin);
+const email = siteEmail("contact.email", contact.email, origin);
+const message = form && { ...form, honeypot: forms.honeypot, submitLabel: contact.submitLabel };
+---
+
+<Base title={page.seo?.title ?? page.title} description={page.seo?.description} image={page.seo?.image} canonical={page.seo?.canonical} entry={page} index={{ kind: "pages", title: page.title }} card>
+	<Container class="pt-group">
+		<ArticleHeader title={page.title} />
+		<Prose class="site-prose mt-blocks"><RichText value={page.body} /></Prose>
+		{
+			message && email ? (
+				<ContactSplit data-parity-skip heading={contact.heading} text={contact.text} email={email} form={message} class="mt-group">
+					{message.enhance && <noscript slot="note">{forms.demoSent}</noscript>}
+				</ContactSplit>
+			) : message ? (
+				<Contact data-parity-skip heading={contact.heading} text={contact.text} class="mt-group">
+					<MessageForm {...message} />
+				</Contact>
+			) : (
+				<Contact data-parity-skip heading={contact.reachHeading} class="mt-group">
+					{email ? <ContactInfo email={email} /> : <p class="m-0 max-w-prose text-body">{contact.noChannel}</p>}
+				</Contact>
+			)
+		}
+	</Container>
+</Base>

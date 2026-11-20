@@ -1,0 +1,8 @@
+/* Modern: soft and borderless, big round corners, wide soft shadows, Plus Jakarta Sans. Turn it on in src/styles/global.css. */
+@import "@astronomic/ui/presets/modern.css";
+
+/* The preset names its face; Astro's font API serves it as --font-plus-jakarta-sans (astro.config.mjs). */
+:root {
+  --ui-font-display: var(--font-plus-jakarta-sans, "Plus Jakarta Sans", ui-sans-serif, system-ui, sans-serif);
+  --ui-font-body: var(--font-plus-jakarta-sans, "Plus Jakarta Sans", ui-sans-serif, system-ui, sans-serif);
+}

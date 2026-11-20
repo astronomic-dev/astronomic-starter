@@ -1,0 +1,1412 @@
+{
+	"$schema": "https://emdashcms.com/seed.schema.json",
+	"version": "1",
+	"meta": {
+		"name": "Starter",
+		"description": "A product site starter: a blog, guides in a series and plain pages",
+		"author": "Astronomic"
+	},
+	"settings": {
+		"title": "Astronomic UI",
+		"tagline": "A fast, simple site for your product."
+	},
+	"collections": [
+		{
+			"slug": "posts",
+			"label": "Posts",
+			"labelSingular": "Post",
+			"urlPattern": "/posts/{slug}",
+			"supports": [
+				"drafts",
+				"revisions",
+				"preview",
+				"scheduling",
+				"search",
+				"seo"
+			],
+			"fields": [
+				{
+					"slug": "title",
+					"label": "Title",
+					"type": "string",
+					"required": true,
+					"searchable": true
+				},
+				{
+					"slug": "featured_image",
+					"label": "Featured Image",
+					"type": "image"
+				},
+				{
+					"slug": "content",
+					"label": "Content",
+					"type": "portableText",
+					"searchable": true
+				},
+				{
+					"slug": "excerpt",
+					"label": "Excerpt",
+					"type": "text"
+				},
+				{
+					"slug": "author_name",
+					"label": "Author name",
+					"type": "string"
+				},
+				{
+					"slug": "author_role",
+					"label": "Author role",
+					"type": "string"
+				},
+				{
+					"slug": "author_image",
+					"label": "Author photo",
+					"type": "image"
+				}
+			]
+		},
+		{
+			"slug": "pages",
+			"label": "Pages",
+			"labelSingular": "Page",
+			"urlPattern": "/{slug}",
+			"supports": [
+				"drafts",
+				"revisions",
+				"preview",
+				"search",
+				"seo"
+			],
+			"fields": [
+				{
+					"slug": "title",
+					"label": "Title",
+					"type": "string",
+					"required": true,
+					"searchable": true
+				},
+				{
+					"slug": "content",
+					"label": "Content",
+					"type": "portableText",
+					"searchable": true
+				}
+			]
+		},
+		{
+			"slug": "guides",
+			"label": "Guides",
+			"labelSingular": "Guide",
+			"urlPattern": "/guides/{slug}",
+			"supports": [
+				"drafts",
+				"revisions",
+				"preview",
+				"search",
+				"seo"
+			],
+			"fields": [
+				{
+					"slug": "title",
+					"label": "Title",
+					"type": "string",
+					"required": true,
+					"searchable": true
+				},
+				{
+					"slug": "excerpt",
+					"label": "Excerpt",
+					"type": "text",
+					"searchable": true
+				},
+				{
+					"slug": "content",
+					"label": "Content",
+					"type": "portableText",
+					"searchable": true
+				},
+				{
+					"slug": "series",
+					"label": "Series",
+					"type": "reference",
+					"required": true,
+					"validation": {
+						"targetCollection": "series"
+					}
+				},
+				{
+					"slug": "series_part",
+					"label": "Part in the series",
+					"type": "integer",
+					"required": true
+				}
+			]
+		},
+		{
+			"slug": "series",
+			"label": "Series",
+			"labelSingular": "Series",
+			"supports": [
+				"drafts",
+				"revisions"
+			],
+			"fields": [
+				{
+					"slug": "title",
+					"label": "Title",
+					"type": "string",
+					"required": true
+				},
+				{
+					"slug": "description",
+					"label": "Description",
+					"type": "text"
+				}
+			]
+		}
+	],
+	"taxonomies": [
+		{
+			"name": "category",
+			"label": "Categories",
+			"labelSingular": "Category",
+			"hierarchical": true,
+			"collections": [
+				"posts"
+			],
+			"terms": [
+				{
+					"slug": "design",
+					"label": "Design"
+				},
+				{
+					"slug": "news",
+					"label": "News"
+				},
+				{
+					"slug": "product",
+					"label": "Product"
+				}
+			]
+		},
+		{
+			"name": "tag",
+			"label": "Tags",
+			"labelSingular": "Tag",
+			"hierarchical": false,
+			"collections": [
+				"posts"
+			],
+			"terms": [
+				{
+					"slug": "launch",
+					"label": "Launch"
+				},
+				{
+					"slug": "performance",
+					"label": "Performance"
+				},
+				{
+					"slug": "presets",
+					"label": "Presets"
+				},
+				{
+					"slug": "tips",
+					"label": "Tips"
+				}
+			]
+		}
+	],
+	"menus": [
+		{
+			"name": "primary",
+			"label": "Primary Navigation",
+			"items": [
+				{
+					"type": "custom",
+					"label": "Blog",
+					"url": "/posts"
+				},
+				{
+					"type": "custom",
+					"label": "Guides",
+					"url": "/guides"
+				},
+				{
+					"type": "custom",
+					"label": "About",
+					"url": "/about"
+				},
+				{
+					"type": "custom",
+					"label": "Contact",
+					"url": "/contact"
+				}
+			]
+		}
+	],
+	"widgetAreas": [
+		{
+			"name": "sidebar",
+			"label": "Sidebar",
+			"description": "Sidebar widget area",
+			"widgets": [
+				{
+					"type": "component",
+					"componentId": "core:search",
+					"title": "Search"
+				},
+				{
+					"type": "component",
+					"componentId": "core:categories",
+					"title": "Categories"
+				},
+				{
+					"type": "component",
+					"componentId": "core:recent-posts",
+					"title": "Recent Posts",
+					"props": {
+						"count": 5
+					}
+				}
+			]
+		}
+	],
+	"content": {
+		"pages": [
+			{
+				"id": "pages-about",
+				"slug": "about",
+				"status": "published",
+				"data": {
+					"title": "About",
+					"content": [
+						{
+							"_type": "block",
+							"_key": "pages-about-1",
+							"style": "normal",
+							"markDefs": [],
+							"children": [
+								{
+									"_type": "span",
+									"_key": "pages-about-2",
+									"text": "Your product exists to solve one problem well. Use this page to say what that problem is, who the product is for and why you care about it.",
+									"marks": []
+								}
+							]
+						},
+						{
+							"_type": "block",
+							"_key": "pages-about-3",
+							"style": "h2",
+							"markDefs": [],
+							"children": [
+								{
+									"_type": "span",
+									"_key": "pages-about-4",
+									"text": "How we work",
+									"marks": []
+								}
+							]
+						},
+						{
+							"_type": "block",
+							"_key": "pages-about-5",
+							"style": "normal",
+							"markDefs": [],
+							"children": [
+								{
+									"_type": "span",
+									"_key": "pages-about-6",
+									"text": "We ship small updates often, listen to the people who use the product and fix what gets in their way. Replace this text with your own story.",
+									"marks": []
+								}
+							]
+						}
+					]
+				}
+			},
+			{
+				"id": "pages-contact",
+				"slug": "contact",
+				"status": "published",
+				"data": {
+					"title": "Contact",
+					"content": [
+						{
+							"_type": "block",
+							"_key": "pages-contact-1",
+							"style": "normal",
+							"markDefs": [],
+							"children": [
+								{
+									"_type": "span",
+									"_key": "pages-contact-2",
+									"text": "Have a question, a bug to report or an idea to share? We would like to hear it.",
+									"marks": []
+								}
+							]
+						}
+					]
+				}
+			},
+			{
+				"id": "pages-privacy",
+				"slug": "privacy",
+				"status": "published",
+				"data": {
+					"title": "Privacy policy",
+					"content": [
+						{
+							"_type": "block",
+							"_key": "pages-privacy-1",
+							"style": "normal",
+							"markDefs": [],
+							"children": [
+								{
+									"_type": "span",
+									"_key": "pages-privacy-2",
+									"text": "This is a sample privacy policy. Replace it with your own before you launch, and have it checked by someone who knows the law where you do business.",
+									"marks": []
+								}
+							]
+						},
+						{
+							"_type": "block",
+							"_key": "pages-privacy-3",
+							"style": "h2",
+							"markDefs": [],
+							"children": [
+								{
+									"_type": "span",
+									"_key": "pages-privacy-4",
+									"text": "What we collect",
+									"marks": []
+								}
+							]
+						},
+						{
+							"_type": "block",
+							"_key": "pages-privacy-5",
+							"style": "normal",
+							"markDefs": [],
+							"children": [
+								{
+									"_type": "span",
+									"_key": "pages-privacy-6",
+									"text": "When you send a message or sign up for the newsletter, we keep your name and email address so we can reply and send you updates.",
+									"marks": []
+								}
+							]
+						},
+						{
+							"_type": "block",
+							"_key": "pages-privacy-7",
+							"style": "h2",
+							"markDefs": [],
+							"children": [
+								{
+									"_type": "span",
+									"_key": "pages-privacy-8",
+									"text": "What we do not do",
+									"marks": []
+								}
+							]
+						},
+						{
+							"_type": "block",
+							"_key": "pages-privacy-9",
+							"style": "normal",
+							"markDefs": [],
+							"children": [
+								{
+									"_type": "span",
+									"_key": "pages-privacy-10",
+									"text": "We do not sell your information, and this site sets no tracking cookies.",
+									"marks": []
+								}
+							]
+						},
+						{
+							"_type": "block",
+							"_key": "pages-privacy-11",
+							"style": "h2",
+							"markDefs": [],
+							"children": [
+								{
+									"_type": "span",
+									"_key": "pages-privacy-12",
+									"text": "Questions",
+									"marks": []
+								}
+							]
+						},
+						{
+							"_type": "block",
+							"_key": "pages-privacy-13",
+							"style": "normal",
+							"markDefs": [],
+							"children": [
+								{
+									"_type": "span",
+									"_key": "pages-privacy-14",
+									"text": "Send any question about this policy through our contact page.",
+									"marks": []
+								}
+							]
+						}
+					]
+				}
+			}
+		],
+		"posts": [
+			{
+				"id": "posts-fast-pages-by-default",
+				"slug": "fast-pages-by-default",
+				"status": "published",
+				"data": {
+					"title": "Fast pages by default",
+					"excerpt": "Plain HTML, small scripts and well-sized images keep the site quick.",
+					"featured_image": {
+						"provider": "local",
+						"id": "01K8STARTERC0VER000000000C",
+						"width": 1400,
+						"height": 933,
+						"mimeType": "image/webp",
+						"filename": "fast-pages-by-default.webp",
+						"meta": {
+							"storageKey": "demo/posts/fast-pages-by-default.webp"
+						},
+						"alt": "A laptop keyboard and trackpad on a white marble desk"
+					},
+					"content": [
+						{
+							"_type": "block",
+							"_key": "posts-fast-pages-by-default-1",
+							"style": "normal",
+							"markDefs": [],
+							"children": [
+								{
+									"_type": "span",
+									"_key": "posts-fast-pages-by-default-2",
+									"text": "Most pages on this site are plain HTML. They load quickly on any phone and any connection.",
+									"marks": []
+								}
+							]
+						},
+						{
+							"_type": "block",
+							"_key": "posts-fast-pages-by-default-3",
+							"style": "h2",
+							"markDefs": [],
+							"children": [
+								{
+									"_type": "span",
+									"_key": "posts-fast-pages-by-default-4",
+									"text": "What keeps it fast",
+									"marks": []
+								}
+							]
+						},
+						{
+							"_type": "block",
+							"_key": "posts-fast-pages-by-default-5",
+							"style": "normal",
+							"markDefs": [],
+							"children": [
+								{
+									"_type": "span",
+									"_key": "posts-fast-pages-by-default-6",
+									"text": "Pages ship as HTML, with no app to download first.",
+									"marks": []
+								}
+							],
+							"listItem": "bullet",
+							"level": 1
+						},
+						{
+							"_type": "block",
+							"_key": "posts-fast-pages-by-default-7",
+							"style": "normal",
+							"markDefs": [],
+							"children": [
+								{
+									"_type": "span",
+									"_key": "posts-fast-pages-by-default-8",
+									"text": "Scripts load only where a part needs them.",
+									"marks": []
+								}
+							],
+							"listItem": "bullet",
+							"level": 1
+						},
+						{
+							"_type": "block",
+							"_key": "posts-fast-pages-by-default-9",
+							"style": "normal",
+							"markDefs": [],
+							"children": [
+								{
+									"_type": "span",
+									"_key": "posts-fast-pages-by-default-10",
+									"text": "Images get the right size for each screen.",
+									"marks": []
+								}
+							],
+							"listItem": "bullet",
+							"level": 1
+						},
+						{
+							"_type": "block",
+							"_key": "posts-fast-pages-by-default-11",
+							"style": "h2",
+							"markDefs": [],
+							"children": [
+								{
+									"_type": "span",
+									"_key": "posts-fast-pages-by-default-12",
+									"text": "Check it yourself",
+									"marks": []
+								}
+							]
+						},
+						{
+							"_type": "block",
+							"_key": "posts-fast-pages-by-default-13",
+							"style": "normal",
+							"markDefs": [],
+							"children": [
+								{
+									"_type": "span",
+									"_key": "posts-fast-pages-by-default-14",
+									"text": "Run ",
+									"marks": []
+								},
+								{
+									"_type": "span",
+									"_key": "posts-fast-pages-by-default-15",
+									"text": "pnpm build",
+									"marks": [
+										"code"
+									]
+								},
+								{
+									"_type": "span",
+									"_key": "posts-fast-pages-by-default-16",
+									"text": ", then ",
+									"marks": []
+								},
+								{
+									"_type": "span",
+									"_key": "posts-fast-pages-by-default-17",
+									"text": "pnpm preview",
+									"marks": [
+										"code"
+									]
+								},
+								{
+									"_type": "span",
+									"_key": "posts-fast-pages-by-default-18",
+									"text": ", and open the network panel in your browser. Most pages load very little JavaScript.",
+									"marks": []
+								}
+							]
+						}
+					],
+					"author_name": "Marcus Delgado",
+					"author_role": "Engineer"
+				},
+				"taxonomies": {
+					"category": [
+						"product"
+					],
+					"tag": [
+						"performance",
+						"tips"
+					]
+				}
+			},
+			{
+				"id": "posts-start-with-a-preset",
+				"slug": "start-with-a-preset",
+				"status": "published",
+				"data": {
+					"title": "Start every page with a preset",
+					"excerpt": "A preset sets the type, color and shape of the whole site in one line.",
+					"featured_image": {
+						"provider": "local",
+						"id": "01K8STARTERC0VER000000000B",
+						"width": 1400,
+						"height": 836,
+						"mimeType": "image/webp",
+						"filename": "start-with-a-preset.webp",
+						"meta": {
+							"storageKey": "demo/posts/start-with-a-preset.webp"
+						},
+						"alt": "A watercolor paint set, brushes and a blank sketchbook on a wooden table"
+					},
+					"content": [
+						{
+							"_type": "block",
+							"_key": "posts-start-with-a-preset-1",
+							"style": "normal",
+							"markDefs": [],
+							"children": [
+								{
+									"_type": "span",
+									"_key": "posts-start-with-a-preset-2",
+									"text": "A preset is a set of design tokens: fonts, colors, corner radius and spacing. Pick one, and every page follows it.",
+									"marks": []
+								}
+							]
+						},
+						{
+							"_type": "block",
+							"_key": "posts-start-with-a-preset-3",
+							"style": "h2",
+							"markDefs": [],
+							"children": [
+								{
+									"_type": "span",
+									"_key": "posts-start-with-a-preset-4",
+									"text": "Why a preset first",
+									"marks": []
+								}
+							]
+						},
+						{
+							"_type": "block",
+							"_key": "posts-start-with-a-preset-5",
+							"style": "normal",
+							"markDefs": [],
+							"children": [
+								{
+									"_type": "span",
+									"_key": "posts-start-with-a-preset-6",
+									"text": "It is faster to choose a look than to build one. Start with a preset, ship the site, then adjust the few tokens you care about.",
+									"marks": []
+								}
+							]
+						},
+						{
+							"_type": "block",
+							"_key": "posts-start-with-a-preset-7",
+							"style": "h2",
+							"markDefs": [],
+							"children": [
+								{
+									"_type": "span",
+									"_key": "posts-start-with-a-preset-8",
+									"text": "What a preset changes",
+									"marks": []
+								}
+							]
+						},
+						{
+							"_type": "block",
+							"_key": "posts-start-with-a-preset-9",
+							"style": "normal",
+							"markDefs": [],
+							"children": [
+								{
+									"_type": "span",
+									"_key": "posts-start-with-a-preset-10",
+									"text": "Fonts for headings and body text",
+									"marks": []
+								}
+							],
+							"listItem": "bullet",
+							"level": 1
+						},
+						{
+							"_type": "block",
+							"_key": "posts-start-with-a-preset-11",
+							"style": "normal",
+							"markDefs": [],
+							"children": [
+								{
+									"_type": "span",
+									"_key": "posts-start-with-a-preset-12",
+									"text": "Colors for text, surfaces and accents",
+									"marks": []
+								}
+							],
+							"listItem": "bullet",
+							"level": 1
+						},
+						{
+							"_type": "block",
+							"_key": "posts-start-with-a-preset-13",
+							"style": "normal",
+							"markDefs": [],
+							"children": [
+								{
+									"_type": "span",
+									"_key": "posts-start-with-a-preset-14",
+									"text": "Corner radius and border width",
+									"marks": []
+								}
+							],
+							"listItem": "bullet",
+							"level": 1
+						},
+						{
+							"_type": "block",
+							"_key": "posts-start-with-a-preset-15",
+							"style": "normal",
+							"markDefs": [],
+							"children": [
+								{
+									"_type": "span",
+									"_key": "posts-start-with-a-preset-16",
+									"text": "The page code stays the same. Only the look changes.",
+									"marks": []
+								}
+							]
+						}
+					],
+					"author_name": "Nora Whitfield",
+					"author_role": "Founder"
+				},
+				"taxonomies": {
+					"category": [
+						"design"
+					],
+					"tag": [
+						"presets",
+						"tips"
+					]
+				}
+			},
+			{
+				"id": "posts-welcome",
+				"slug": "welcome",
+				"status": "published",
+				"data": {
+					"title": "Welcome to the blog",
+					"excerpt": "What this blog is for, and what to read first.",
+					"featured_image": {
+						"provider": "local",
+						"id": "01K8STARTERC0VER000000000A",
+						"width": 1400,
+						"height": 828,
+						"mimeType": "image/webp",
+						"filename": "welcome.webp",
+						"meta": {
+							"storageKey": "demo/posts/welcome.webp"
+						},
+						"alt": "A silver pen resting on a closed gray notebook"
+					},
+					"content": [
+						{
+							"_type": "block",
+							"_key": "posts-welcome-1",
+							"style": "normal",
+							"markDefs": [],
+							"children": [
+								{
+									"_type": "span",
+									"_key": "posts-welcome-2",
+									"text": "This is the blog for your product. Use it for news, release notes and short how-to posts. Each post has a category, a few tags and an author.",
+									"marks": []
+								}
+							]
+						},
+						{
+							"_type": "block",
+							"_key": "posts-welcome-3",
+							"style": "h2",
+							"markDefs": [],
+							"children": [
+								{
+									"_type": "span",
+									"_key": "posts-welcome-4",
+									"text": "What to do next",
+									"marks": []
+								}
+							]
+						},
+						{
+							"_type": "block",
+							"_key": "posts-welcome-5",
+							"style": "normal",
+							"markDefs": [],
+							"children": [
+								{
+									"_type": "span",
+									"_key": "posts-welcome-6",
+									"text": "Read the Getting started guides to install the site and make it your own. Then replace this post with your first real one.",
+									"marks": []
+								}
+							]
+						},
+						{
+							"_type": "block",
+							"_key": "posts-welcome-7",
+							"style": "normal",
+							"markDefs": [],
+							"children": [
+								{
+									"_type": "span",
+									"_key": "posts-welcome-8",
+									"text": "Each post is a Markdown file in ",
+									"marks": []
+								},
+								{
+									"_type": "span",
+									"_key": "posts-welcome-9",
+									"text": "content/posts/",
+									"marks": [
+										"code"
+									]
+								},
+								{
+									"_type": "span",
+									"_key": "posts-welcome-10",
+									"text": ". With EmDash, you write posts in the admin panel instead.",
+									"marks": []
+								}
+							]
+						}
+					],
+					"author_name": "Nora Whitfield",
+					"author_role": "Founder"
+				},
+				"taxonomies": {
+					"category": [
+						"news"
+					],
+					"tag": [
+						"launch"
+					]
+				}
+			}
+		],
+		"series": [
+			{
+				"id": "series-getting-started",
+				"slug": "getting-started",
+				"status": "published",
+				"data": {
+					"title": "Getting started",
+					"description": "Install the site, pick a look and build your first page, in three short guides."
+				}
+			}
+		],
+		"guides": [
+			{
+				"id": "guides-build-a-page",
+				"slug": "build-a-page",
+				"status": "published",
+				"data": {
+					"title": "Build a page",
+					"excerpt": "Add a new page from ready-made parts.",
+					"series": "$ref:series-getting-started",
+					"series_part": 3,
+					"content": [
+						{
+							"_type": "block",
+							"_key": "guides-build-a-page-1",
+							"style": "normal",
+							"markDefs": [],
+							"children": [
+								{
+									"_type": "span",
+									"_key": "guides-build-a-page-2",
+									"text": "Pages are Astro files in ",
+									"marks": []
+								},
+								{
+									"_type": "span",
+									"_key": "guides-build-a-page-3",
+									"text": "src/pages/",
+									"marks": [
+										"code"
+									]
+								},
+								{
+									"_type": "span",
+									"_key": "guides-build-a-page-4",
+									"text": ". Each one is built from parts: a hero, a grid of features, a call to action and more.",
+									"marks": []
+								}
+							]
+						},
+						{
+							"_type": "block",
+							"_key": "guides-build-a-page-5",
+							"style": "h2",
+							"markDefs": [],
+							"children": [
+								{
+									"_type": "span",
+									"_key": "guides-build-a-page-6",
+									"text": "Add a page",
+									"marks": []
+								}
+							]
+						},
+						{
+							"_type": "block",
+							"_key": "guides-build-a-page-7",
+							"style": "normal",
+							"markDefs": [],
+							"children": [
+								{
+									"_type": "span",
+									"_key": "guides-build-a-page-8",
+									"text": "Create a file such as ",
+									"marks": []
+								},
+								{
+									"_type": "span",
+									"_key": "guides-build-a-page-9",
+									"text": "src/pages/team.astro",
+									"marks": [
+										"code"
+									]
+								},
+								{
+									"_type": "span",
+									"_key": "guides-build-a-page-10",
+									"text": ".",
+									"marks": []
+								}
+							],
+							"listItem": "bullet",
+							"level": 1
+						},
+						{
+							"_type": "block",
+							"_key": "guides-build-a-page-11",
+							"style": "normal",
+							"markDefs": [],
+							"children": [
+								{
+									"_type": "span",
+									"_key": "guides-build-a-page-12",
+									"text": "Import the parts you need from ",
+									"marks": []
+								},
+								{
+									"_type": "span",
+									"_key": "guides-build-a-page-13",
+									"text": "@astronomic/ui",
+									"marks": [
+										"code"
+									]
+								},
+								{
+									"_type": "span",
+									"_key": "guides-build-a-page-14",
+									"text": ".",
+									"marks": []
+								}
+							],
+							"listItem": "bullet",
+							"level": 1
+						},
+						{
+							"_type": "block",
+							"_key": "guides-build-a-page-15",
+							"style": "normal",
+							"markDefs": [],
+							"children": [
+								{
+									"_type": "span",
+									"_key": "guides-build-a-page-16",
+									"text": "Place them inside the site layout and save.",
+									"marks": []
+								}
+							],
+							"listItem": "bullet",
+							"level": 1
+						},
+						{
+							"_type": "block",
+							"_key": "guides-build-a-page-17",
+							"style": "h2",
+							"markDefs": [],
+							"children": [
+								{
+									"_type": "span",
+									"_key": "guides-build-a-page-18",
+									"text": "Add a text page",
+									"marks": []
+								}
+							]
+						},
+						{
+							"_type": "block",
+							"_key": "guides-build-a-page-19",
+							"style": "normal",
+							"markDefs": [],
+							"children": [
+								{
+									"_type": "span",
+									"_key": "guides-build-a-page-20",
+									"text": "For a plain text page, add a Markdown file to ",
+									"marks": []
+								},
+								{
+									"_type": "span",
+									"_key": "guides-build-a-page-21",
+									"text": "content/pages/",
+									"marks": [
+										"code"
+									]
+								},
+								{
+									"_type": "span",
+									"_key": "guides-build-a-page-22",
+									"text": " instead. Its file name becomes its address, so ",
+									"marks": []
+								},
+								{
+									"_type": "span",
+									"_key": "guides-build-a-page-23",
+									"text": "faq.md",
+									"marks": [
+										"code"
+									]
+								},
+								{
+									"_type": "span",
+									"_key": "guides-build-a-page-24",
+									"text": " shows at ",
+									"marks": []
+								},
+								{
+									"_type": "span",
+									"_key": "guides-build-a-page-25",
+									"text": "/faq",
+									"marks": [
+										"code"
+									]
+								},
+								{
+									"_type": "span",
+									"_key": "guides-build-a-page-26",
+									"text": ".",
+									"marks": []
+								}
+							]
+						}
+					]
+				}
+			},
+			{
+				"id": "guides-install",
+				"slug": "install",
+				"status": "published",
+				"data": {
+					"title": "Install the site",
+					"excerpt": "Get the site running on your computer in a few minutes.",
+					"series": "$ref:series-getting-started",
+					"series_part": 1,
+					"content": [
+						{
+							"_type": "block",
+							"_key": "guides-install-1",
+							"style": "normal",
+							"markDefs": [],
+							"children": [
+								{
+									"_type": "span",
+									"_key": "guides-install-2",
+									"text": "You need Node 22.18 or later and pnpm.",
+									"marks": []
+								}
+							]
+						},
+						{
+							"_type": "block",
+							"_key": "guides-install-3",
+							"style": "h2",
+							"markDefs": [],
+							"children": [
+								{
+									"_type": "span",
+									"_key": "guides-install-4",
+									"text": "Install",
+									"marks": []
+								}
+							]
+						},
+						{
+							"_type": "block",
+							"_key": "guides-install-5",
+							"style": "normal",
+							"markDefs": [],
+							"children": [
+								{
+									"_type": "span",
+									"_key": "guides-install-6",
+									"text": "Get the files and open the folder in a terminal.",
+									"marks": []
+								}
+							],
+							"listItem": "bullet",
+							"level": 1
+						},
+						{
+							"_type": "block",
+							"_key": "guides-install-7",
+							"style": "normal",
+							"markDefs": [],
+							"children": [
+								{
+									"_type": "span",
+									"_key": "guides-install-8",
+									"text": "Run ",
+									"marks": []
+								},
+								{
+									"_type": "span",
+									"_key": "guides-install-9",
+									"text": "pnpm install",
+									"marks": [
+										"code"
+									]
+								},
+								{
+									"_type": "span",
+									"_key": "guides-install-10",
+									"text": " to add the packages.",
+									"marks": []
+								}
+							],
+							"listItem": "bullet",
+							"level": 1
+						},
+						{
+							"_type": "block",
+							"_key": "guides-install-11",
+							"style": "normal",
+							"markDefs": [],
+							"children": [
+								{
+									"_type": "span",
+									"_key": "guides-install-12",
+									"text": "Run ",
+									"marks": []
+								},
+								{
+									"_type": "span",
+									"_key": "guides-install-13",
+									"text": "pnpm dev",
+									"marks": [
+										"code"
+									]
+								},
+								{
+									"_type": "span",
+									"_key": "guides-install-14",
+									"text": " and open the address it prints.",
+									"marks": []
+								}
+							],
+							"listItem": "bullet",
+							"level": 1
+						},
+						{
+							"_type": "block",
+							"_key": "guides-install-15",
+							"style": "h2",
+							"markDefs": [],
+							"children": [
+								{
+									"_type": "span",
+									"_key": "guides-install-16",
+									"text": "Choose where content lives",
+									"marks": []
+								}
+							]
+						},
+						{
+							"_type": "block",
+							"_key": "guides-install-17",
+							"style": "normal",
+							"markDefs": [],
+							"children": [
+								{
+									"_type": "span",
+									"_key": "guides-install-18",
+									"text": "The site reads the Markdown files in ",
+									"marks": []
+								},
+								{
+									"_type": "span",
+									"_key": "guides-install-19",
+									"text": "content/",
+									"marks": [
+										"code"
+									]
+								},
+								{
+									"_type": "span",
+									"_key": "guides-install-20",
+									"text": " by default. To use EmDash instead, change the content source in ",
+									"marks": []
+								},
+								{
+									"_type": "span",
+									"_key": "guides-install-21",
+									"text": "astro.config.mjs",
+									"marks": [
+										"code"
+									]
+								},
+								{
+									"_type": "span",
+									"_key": "guides-install-22",
+									"text": ", then load the demo content with ",
+									"marks": []
+								},
+								{
+									"_type": "span",
+									"_key": "guides-install-23",
+									"text": "pnpm seed:emdash",
+									"marks": [
+										"code"
+									]
+								},
+								{
+									"_type": "span",
+									"_key": "guides-install-24",
+									"text": ".",
+									"marks": []
+								}
+							]
+						}
+					]
+				}
+			},
+			{
+				"id": "guides-pick-a-preset",
+				"slug": "pick-a-preset",
+				"status": "published",
+				"data": {
+					"title": "Pick a preset",
+					"excerpt": "Change the look of the whole site with one line.",
+					"series": "$ref:series-getting-started",
+					"series_part": 2,
+					"content": [
+						{
+							"_type": "block",
+							"_key": "guides-pick-a-preset-1",
+							"style": "normal",
+							"markDefs": [],
+							"children": [
+								{
+									"_type": "span",
+									"_key": "guides-pick-a-preset-2",
+									"text": "The site uses the default look, Minimal. A preset swaps it for another look on every page.",
+									"marks": []
+								}
+							]
+						},
+						{
+							"_type": "block",
+							"_key": "guides-pick-a-preset-3",
+							"style": "h2",
+							"markDefs": [],
+							"children": [
+								{
+									"_type": "span",
+									"_key": "guides-pick-a-preset-4",
+									"text": "Switch the preset",
+									"marks": []
+								}
+							]
+						},
+						{
+							"_type": "block",
+							"_key": "guides-pick-a-preset-5",
+							"style": "normal",
+							"markDefs": [],
+							"children": [
+								{
+									"_type": "span",
+									"_key": "guides-pick-a-preset-6",
+									"text": "Open ",
+									"marks": []
+								},
+								{
+									"_type": "span",
+									"_key": "guides-pick-a-preset-7",
+									"text": "src/styles/global.css",
+									"marks": [
+										"code"
+									]
+								},
+								{
+									"_type": "span",
+									"_key": "guides-pick-a-preset-8",
+									"text": " and uncomment one look line (remove its ",
+									"marks": []
+								},
+								{
+									"_type": "span",
+									"_key": "guides-pick-a-preset-8a",
+									"text": "/*",
+									"marks": [
+										"code"
+									]
+								},
+								{
+									"_type": "span",
+									"_key": "guides-pick-a-preset-8b",
+									"text": " and ",
+									"marks": []
+								},
+								{
+									"_type": "span",
+									"_key": "guides-pick-a-preset-8c",
+									"text": "*/",
+									"marks": [
+										"code"
+									]
+								},
+								{
+									"_type": "span",
+									"_key": "guides-pick-a-preset-8d",
+									"text": "), such as Soft or Ink. Save, and the dev server shows the new look right away.",
+									"marks": []
+								}
+							]
+						},
+						{
+							"_type": "block",
+							"_key": "guides-pick-a-preset-9",
+							"style": "h2",
+							"markDefs": [],
+							"children": [
+								{
+									"_type": "span",
+									"_key": "guides-pick-a-preset-10",
+									"text": "Light and dark",
+									"marks": []
+								}
+							]
+						},
+						{
+							"_type": "block",
+							"_key": "guides-pick-a-preset-11",
+							"style": "normal",
+							"markDefs": [],
+							"children": [
+								{
+									"_type": "span",
+									"_key": "guides-pick-a-preset-12",
+									"text": "Every preset has a light mode and a dark mode. Visitors switch between them with the button in the navigation bar.",
+									"marks": []
+								}
+							]
+						}
+					]
+				}
+			}
+		]
+	}
+}

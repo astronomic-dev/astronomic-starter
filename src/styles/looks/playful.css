@@ -1,0 +1,8 @@
+/* Playful: friendly and round, hot pink and butter yellow, pill buttons, Bricolage Grotesque over Nunito. Turn it on in src/styles/global.css. */
+@import "@astronomic/ui/presets/playful.css";
+
+/* The preset names its faces; Astro's font API serves them as --font-bricolage-grotesque and --font-nunito (astro.config.mjs). */
+:root {
+  --ui-font-display: var(--font-bricolage-grotesque, "Bricolage Grotesque", ui-sans-serif, system-ui, sans-serif);
+  --ui-font-body: var(--font-nunito, "Nunito", ui-sans-serif, system-ui, sans-serif);
+}

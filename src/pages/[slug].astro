@@ -1,0 +1,28 @@
+---
+/** A plain page from the pages collection (e.g. /privacy). About and Contact have their own route files. */
+import ArticleHeader from "@astronomic/ui/components/ArticleHeader.astro";
+import Container from "@astronomic/ui/components/Container.astro";
+import Prose from "@astronomic/ui/components/Prose.astro";
+import { useContent } from "~/content";
+import RichText from "../components/RichText.astro";
+import Base from "../layouts/Base.astro";
+import { PAGE_ROUTES, slugPaths } from "../utils/routes";
+
+export const getStaticPaths = async () => (await slugPaths("pages")).filter((p) => !PAGE_ROUTES.has(p.params.slug));
+
+const content = useContent(Astro);
+const slug = Astro.params.slug;
+const page = slug && !PAGE_ROUTES.has(slug) ? await content.pages.get(slug) : undefined;
+if (!page) {
+	return Astro.rewrite("/404");
+}
+---
+
+<Base title={page.seo?.title ?? page.title} description={page.seo?.description} image={page.seo?.image} canonical={page.seo?.canonical} entry={page} index={{ kind: "pages", title: page.title }} card>
+	<Container size="sm" class="pt-group">
+		<article>
+			<ArticleHeader title={page.title} />
+			<Prose class="site-prose mt-blocks"><RichText value={page.body} /></Prose>
+		</article>
+	</Container>
+</Base>

@@ -1,0 +1,57 @@
+---
+/** A guide: the header, the text, the series' parts beside it on a wide screen, and the pager under it. */
+import ArticleHeader from "@astronomic/ui/components/ArticleHeader.astro";
+import Container from "@astronomic/ui/components/Container.astro";
+import Prose from "@astronomic/ui/components/Prose.astro";
+import SeriesList from "@astronomic/ui/components/SeriesList.astro";
+import SeriesPager from "@astronomic/ui/components/SeriesPager.astro";
+import { searchIgnore, useContent } from "~/content";
+import RichText from "../../components/RichText.astro";
+import Base from "../../layouts/Base.astro";
+import { guideHref } from "../../utils/posts";
+import { slugPaths } from "../../utils/routes";
+
+export const getStaticPaths = () => slugPaths("guides");
+
+const content = useContent(Astro);
+const guide = Astro.params.slug ? await content.guides.get(Astro.params.slug) : undefined;
+if (!guide) {
+	return Astro.rewrite("/404");
+}
+// A guide with no series has an empty series slug, and listing by "" returns every guide: it is its own only part.
+const { items: parts } = guide.series.ref.slug ? await content.guides.list({ series: guide.series.ref.slug }) : { items: [guide] };
+// The series nav is about other guides: static search leaves it out of this page's entry.
+const ignore = searchIgnore(content);
+const seriesNav = {
+	title: guide.series.ref.title,
+	href: `/guides#${guide.series.ref.slug}`,
+	label: "Guide",
+	parts: parts.map((p) => ({ title: p.title, href: guideHref(p.slug), current: p.slug === guide.slug })),
+};
+---
+
+<Base
+	title={guide.seo?.title ?? guide.title}
+	description={guide.seo?.description ?? guide.excerpt}
+	image={guide.seo?.image}
+	canonical={guide.seo?.canonical}
+	entry={guide}
+	index={{ kind: "guides", title: guide.title, summary: guide.excerpt }}
+	card
+>
+	<Container class="pt-group">
+		<div class="grid gap-group lg:grid-cols-[minmax(0,1fr)_18rem]">
+			<article class="min-w-0">
+				<ArticleHeader title={guide.title} text={guide.excerpt} series={{ label: `${guide.series.ref.title}, part ${guide.series.part}`, href: seriesNav.href }} />
+				<Prose class="site-prose mt-blocks">
+					<RichText value={guide.body} />
+				</Prose>
+				<SeriesPager {...seriesNav} {...ignore} previousLabel="Previous part" nextLabel="Next part" allLabel="All guides" class="mt-group max-w-prose" />
+			</article>
+			{/* Beside the text on a wide screen; on a narrower one the pager under the text does its job. */}
+			<aside data-parity-skip {...ignore} aria-label="Guide parts" class="max-lg:hidden lg:sticky lg:top-nav-inset lg:self-start">
+				<SeriesList {...seriesNav} headingTag="h2" />
+			</aside>
+		</div>
+	</Container>
+</Base>

@@ -1,0 +1,8 @@
+{
+	"primary": [
+		{ "label": "Blog", "href": "/posts" },
+		{ "label": "Guides", "href": "/guides" },
+		{ "label": "About", "href": "/about" },
+		{ "label": "Contact", "href": "/contact" }
+	]
+}

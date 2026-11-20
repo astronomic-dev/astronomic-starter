@@ -1,0 +1,8 @@
+/* Soft: pill controls, round cards, roomy spacing, soft shadows, Figtree. Turn it on in src/styles/global.css. */
+@import "@astronomic/ui/presets/soft.css";
+
+/* The preset names its face; Astro's font API serves it as --font-figtree (astro.config.mjs). */
+:root {
+  --ui-font-display: var(--font-figtree, "Figtree", ui-sans-serif, system-ui, sans-serif);
+  --ui-font-body: var(--font-figtree, "Figtree", ui-sans-serif, system-ui, sans-serif);
+}

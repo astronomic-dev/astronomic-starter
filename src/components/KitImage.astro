@@ -1,0 +1,18 @@
+---
+/**
+ * The starter's image component for kit parts (`imageComponent`, e.g. PostGrid): the kit draws the frame, this draws
+ * the photo through ContentImage, so EmDash and local images keep their srcset. Pass the whole content image as the
+ * kit image's src: `image: { src: post.image }`. The kit's alt wins ("" for a decorative photo); eager loading
+ * becomes priority.
+ */
+import type { ImageComponentProps } from "@astronomic/ui/lib/image.ts";
+import type { ContentImage as Image } from "~/content";
+import ContentImage from "./ContentImage.astro";
+
+type Props = ImageComponentProps;
+
+const { src, alt, loading, sizes, class: className, style } = Astro.props;
+if (typeof src === "string") throw new Error("KitImage: pass the content image itself as src, as { src: post.image }");
+---
+
+<ContentImage image={{ ...(src as Image), alt }} priority={loading === "eager"} class={className} sizes={sizes} style={style} />

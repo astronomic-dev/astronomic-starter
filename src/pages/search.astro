@@ -1,0 +1,96 @@
+---
+/**
+ * Search results, one page for both kinds of search (`searchKind`):
+ *
+ * - request (a server build whose source searches): the source searches here
+ *   and theme-core's SearchPage renders the hits on the server.
+ * - static (a static build): SearchPage searches the Pagefind index in the
+ *   browser and fills the same hit markup.
+ * - none: a short notice instead.
+ *
+ * The header search box is the page's box (it holds the query). With no query
+ * or no results, links to the blog and the guides follow.
+ */
+import SearchPage from "@astronomic/theme-core/components/SearchPage.astro";
+import { toShownHit, type ShownHit } from "@astronomic/theme-core/content";
+import { searchQuery } from "@astronomic/theme-core/routes";
+import { searchKind, useContent } from "~/content";
+import ArticleHeader from "@astronomic/ui/components/ArticleHeader.astro";
+import Container from "@astronomic/ui/components/Container.astro";
+import Base from "../layouts/Base.astro";
+
+const content = useContent(Astro);
+const mode = searchKind(content);
+// Static builds have no request, so no query: the browser reads it.
+const query = mode === "request" ? searchQuery(Astro) : "";
+// Every hit is shown (no limit).
+const hits = mode === "request" && query && content.search ? await content.search(query) : [];
+const shown = hits.map((hit) => toShownHit(hit, {}));
+const { title: siteTitle } = await content.settings();
+const titleFor = "Search: {q}";
+
+// `{n}` is the number of results, `{q}` the query.
+const text = {
+	loading: "Searching…",
+	failed: "Search could not load. Try again later.",
+	devOnly: "Search works in a built site: run astro build, then serve dist.",
+	noScript: "Search needs JavaScript.",
+	count: { one: "{n} result for “{q}”", many: "{n} results for “{q}”", more: "{n}+ results for “{q}”" },
+	// The browser's title once static search has the query, worded as Base words the page title.
+	titleFor: `${titleFor} — ${siteTitle}`,
+};
+const intro = "Find a post, a guide or a page.";
+---
+
+<Base title={query ? titleFor.replace("{q}", () => query) : "Search"}>
+	<Container size="md" class="pt-group">
+		{
+			!mode ? (
+				<>
+					<ArticleHeader title="Search" />
+					<p class="mt-blocks text-muted">Search is not available on this site.</p>
+				</>
+			) : (
+				<>
+					<SearchPage
+						mode={mode}
+						query={query}
+						hits={shown}
+						text={text}
+						class="peer [&_[data-search-noscript]]:text-muted [&>[data-search-status]]:text-muted"
+						listClass="mt-blocks border-t-ui border-solid border-border"
+					>
+						{(hit: ShownHit) => (
+							<li class="border-b-ui border-solid border-border py-6">
+								<a data-hit="href" href={hit.href} class="text-lead text-fg no-underline hover:text-accent">
+									{hit.title}
+								</a>
+								{hit.excerpt && <p data-hit="excerpt" class="mt-1 max-w-prose text-muted">{hit.excerpt}</p>}
+							</li>
+						)}
+						{/* The header comes first, outside the live regions; the count is its own live region. A function of
+						the count text (SearchPage fills it in request mode; its script in static mode). */}
+						<div slot="header">
+							{(count: string) => (
+								<>
+									<ArticleHeader title="Search" />
+									<p data-count-text aria-live="polite" class="mt-item text-lead text-muted">
+										{count || intro}
+									</p>
+								</>
+							)}
+						</div>
+						<p slot="empty" class="mt-blocks text-muted">Type something in the search box.</p>
+						<p slot="none" class="mt-blocks text-muted">
+							No results for “<span data-search-query>{query}</span>”.
+						</p>
+					</SearchPage>
+					{/* With no results (and with JavaScript off on a static build): somewhere to go next. */}
+					<p class="mt-blocks text-muted peer-data-[state=results]:hidden [@media(scripting:enabled)]:peer-data-[state=loading]:hidden">
+						Browse <a href="/posts">the blog</a> or <a href="/guides">the guides</a>.
+					</p>
+				</>
+			)
+		}
+	</Container>
+</Base>

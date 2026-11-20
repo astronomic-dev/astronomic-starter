@@ -1,0 +1,15 @@
+/*
+ * Binds the Astro-loaded web font to the Astronomic UI type tokens.
+ *
+ * --font-geist is defined by Astro's fonts API (astro.config.mjs)
+ * and emitted by <Font cssVariable="--font-geist" /> in Base.astro.
+ * It already carries Astro's metric-matched fallback; the var() fallback stack
+ * is only used if the font variable is missing.
+ *
+ * Imported after tokens.css and before the look (src/styles/looks/), so a
+ * look that changes the typeface still wins.
+ */
+:root {
+  --ui-font-display: var(--font-geist, "Geist", ui-sans-serif, system-ui, sans-serif);
+  --ui-font-body: var(--font-geist, "Geist", ui-sans-serif, system-ui, sans-serif);
+}

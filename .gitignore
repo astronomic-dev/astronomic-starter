@@ -1,0 +1,16 @@
+node_modules
+dist
+.astro
+.emdash/migrations.json
+uploads
+data.db
+data.db-*
+
+# Environment
+.env
+.env.*
+!.env.example
+dist-*/
+
+# Test-only content the test runners copy in for one build
+content/**/*.fixture.*

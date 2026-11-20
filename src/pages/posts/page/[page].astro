@@ -1,0 +1,38 @@
+---
+/** The blog's later pages: /posts/page/2 and on. */
+import { useContent } from "~/content";
+import PostArchive from "../../../components/PostArchive.astro";
+import Base from "../../../layouts/Base.astro";
+import { categoryHref, termLinks } from "../../../utils/posts";
+import { PER_PAGE, pageHref, parsePage, postPages } from "../../../utils/routes";
+
+export const getStaticPaths = postPages;
+
+const page = parsePage(Astro.params.page);
+if (!page || page < 2) {
+	return Astro.rewrite("/404");
+}
+
+const content = useContent(Astro);
+const [{ items: posts }, count, categories] = await Promise.all([
+	content.posts.list({ limit: PER_PAGE, offset: (page - 1) * PER_PAGE }),
+	content.posts.count(),
+	content.terms("category"),
+]);
+if (posts.length === 0) {
+	return Astro.rewrite("/404");
+}
+---
+
+<Base title={`Blog, page ${page}`}>
+	<PostArchive
+		title="Blog"
+		text={`Page ${page}`}
+		posts={posts}
+		empty="No posts yet."
+		filter={[{ label: "All posts", href: "/posts", current: true }, ...termLinks(categories, categoryHref)]}
+		page={page}
+		pages={Math.max(1, Math.ceil(count / PER_PAGE))}
+		href={(n) => (n === 1 ? "/posts" : pageHref("/posts/page", n))}
+	/>
+</Base>

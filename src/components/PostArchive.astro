@@ -1,0 +1,39 @@
+---
+/**
+ * A paged list of posts: the page header (kit ArticleHeader, the page's h1), the category filter, the posts as kit
+ * PostGrid cards (each with its cover photo, through KitImage), and the kit Pagination. Shared by /posts, /posts/page/<n>, /category/<slug> and /tag/<slug>, and
+ * shown on /system/sections. Plain props only.
+ */
+import ArticleHeader from "@astronomic/ui/components/ArticleHeader.astro";
+import Container from "@astronomic/ui/components/Container.astro";
+import FilterNav, { type FilterItem } from "@astronomic/ui/components/FilterNav.astro";
+import Pagination from "@astronomic/ui/components/Pagination.astro";
+import PostGrid from "@astronomic/ui/components/PostGrid.astro";
+import type { Post } from "~/content";
+import { postItem } from "../utils/posts";
+import KitImage from "./KitImage.astro";
+
+interface Props {
+	title: string;
+	text?: string;
+	posts: Post[];
+	empty: string;
+	/** The filter: "All posts" and each category. */
+	filter: FilterItem[];
+	/** This page and the number of pages, with the address of page n. */
+	page: number;
+	pages: number;
+	href: (n: number) => string;
+	/** The title's element: h1 on a page (default), h2 when shown inside another page. Post titles go one level below. */
+	headingTag?: "h1" | "h2";
+}
+
+const { title, text, posts, empty, filter, page, pages, href, headingTag = "h1" } = Astro.props;
+---
+
+<Container class="pt-group">
+	<ArticleHeader title={title} text={text} headingTag={headingTag} />
+	{filter.length > 1 && <FilterNav items={filter} label="Categories" class="mt-blocks" />}
+	<PostGrid itemHeadingTag={headingTag === "h1" ? "h2" : "h3"} items={posts.map(postItem)} empty={empty} imageComponent={KitImage} class="mt-blocks" />
+	{pages > 1 && <Pagination current={page} total={pages} href={href} class="mt-blocks" />}
+</Container>

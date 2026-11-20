@@ -1,0 +1,205 @@
+---
+import { Font } from "astro:assets";
+import NavbarSimple from "@astronomic/ui/components/NavbarSimple.astro";
+import { systemLinks } from "@astronomic/ui/system/link";
+import { searchKind, useContent } from "~/content";
+import ContentImage from "../components/ContentImage.astro";
+import "../styles/global.css";
+// Kept after the stylesheet, as the import order was before, so the head output stays the same.
+import ModeToggle from "@astronomic/ui/components/ModeToggle.astro";
+import { modeScript } from "@astronomic/ui/lib/mode.ts";
+import SearchForm from "@astronomic/theme-core/components/SearchForm.astro";
+import SearchIndex from "@astronomic/theme-core/components/SearchIndex.astro";
+import FooterColumns from "@astronomic/ui/components/FooterColumns.astro";
+import { cn } from "@astronomic/ui/lib/cn.ts";
+import { footerLink } from "@astronomic/ui/lib/footer.ts";
+import SeoHead from "@astronomic/theme-core/components/SeoHead.astro";
+import { currentPath, isCurrentPath } from "@astronomic/theme-core/routes";
+import { pageMeta } from "@astronomic/theme-core/seo";
+import { shareImagePath } from "@astronomic/theme-core/share";
+import { siteOrigin } from "../utils/public-pages";
+// Checked there: a look file with no modeSwitch counts as on, and a value that is not true or false stops the build.
+import { modeSwitch } from "../utils/mode-switch";
+import { footer, navAction } from "../site";
+
+interface Props {
+	title: string;
+	pageTitle?: string | null;
+	description?: string | null;
+	/** The share image (the entry's SEO image, else its photo). Without one, the page's card or the home card. */
+	image?: string | null;
+	/** The share image's alt text (when it is the entry's photo). */
+	imageAlt?: string;
+	canonical?: string | null;
+	/** The entry this page shows, for source hooks (e.g. EmDash page contributions). */
+	entry?: { ref?: { source: string; collection: string; id: string }; slug: string; seo?: { noindex?: boolean } };
+	/** `og:type`: "article" for a post. */
+	type?: "website" | "article";
+	/** True when the page has its own share card (it is in publicPages); else it shares the home card. */
+	card?: boolean;
+	/**
+	 * The entry's data for static search (Pagefind): its collection, title and summary. Entry pages pass it;
+	 * structural pages (home, lists, terms, search) do not, so they stay out of the index.
+	 */
+	index?: { kind: string; title: string; summary?: string };
+}
+
+const { title, pageTitle, description, image, imageAlt, canonical, entry, type = "website", card = false, index } = Astro.props;
+const content = useContent(Astro);
+const { Head, BodyStart, BodyEnd } = content.hooks;
+const [settings, menu] = await Promise.all([content.settings(), content.menu("primary")]);
+
+const siteTitle = settings.title;
+const siteTagline = settings.tagline;
+const siteLogo = settings.logo;
+const here = currentPath(Astro.url);
+// The entry's "hide from search engines" renders robots noindex.
+const noindex = !!entry?.seo?.noindex;
+const search = searchKind(content);
+// Static search indexes only the pages that pass `index` (never a noindex page). Server builds render no index markup.
+const indexed = search === "static" && !!index && !noindex;
+const page = pageMeta({
+	title,
+	pageTitle,
+	description,
+	// The page's image wins; else its own card (a noindex page has none: publicPages leaves it out); else the home card.
+	image: image ?? shareImagePath(card && !noindex ? here : "/"),
+	imageAlt: image ? imageAlt : undefined,
+	canonical,
+	entry,
+	noindex,
+	siteTitle,
+	siteTagline,
+	site: siteOrigin(Astro),
+	url: here,
+	type,
+	feed: { title: siteTitle, path: "/rss.xml" },
+});
+
+/** True when `href` is the current page or a section that contains it. */
+const isCurrent = (href: string) => isCurrentPath(here, href);
+
+/** Primary menu mapped to the @astronomic/ui NavbarSimple `links` shape. */
+const navLinks = menu.map((item) => ({
+	label: item.label,
+	href: item.href,
+	current: isCurrent(item.href),
+	target: item.target,
+}));
+
+const year = new Date().getFullYear();
+// The page width: the kit Container's lg size (max-w-7xl, 24px gutters, 16px under 640px). The nav and the footer
+// rows use it too, so their edges line up with the page.
+const pageRow = "mx-auto w-full max-w-7xl px-6 max-sm:px-4";
+---
+
+<!doctype html>
+<html lang="en">
+	<head>
+		<meta charset="UTF-8" />
+		<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+		<meta name="generator" content={Astro.generator} />
+		{/* Light and dark follow the visitor's system until they press the nav's switch. This inline script puts a
+		saved choice on <html> before the first paint. It stays first in <head>, before any stylesheet; data-mode-script
+		names it for the tests. With modeSwitch off (src/theme.look.ts) there is no switch and no script, so a choice
+		saved before is not read: nothing could change it back. */}
+		{modeSwitch && <script is:inline data-mode-script set:html={modeScript} />}
+		<title>{page.title}</title>
+		<link rel="icon" href="/favicon.svg" type="image/svg+xml" />
+		{/* Geist (Minimal) and the other looks' faces (src/styles/looks/). None is preloaded: the look is CSS, so the
+		browser fetches only the family the look in src/styles/global.css uses (a preload would fetch Geist in every look).
+		Each face has a metric-matched fallback, so the swap barely moves the text. */}
+		{(["--font-geist", "--font-inter", "--font-plus-jakarta-sans", "--font-bricolage-grotesque", "--font-nunito", "--font-figtree", "--font-newsreader", "--font-libre-franklin"] as const).map((v) => <Font cssVariable={v} />)}
+		{/* The product always owns its meta tags. Source hooks only add to them. */}
+		<SeoHead page={page} />
+		{Head && <Head page={page} />}
+	</head>
+	<body class="flex min-h-dvh flex-col">
+		{BodyStart && <BodyStart page={page} />}
+
+		{/* On phones the bar's parts sit 12px apart, and the end group (the search box and the switch) takes the room
+		the site's name leaves: the search box narrows to fit (to 6rem at least), so the name keeps one line. A name
+		too long for what is left is cut short with an ellipsis. With no search the end group keeps its own width, so the
+		switch stays at the end of the bar, by the menu button. The action (src/site.ts) folds into the menu with the
+		links. */}
+		<NavbarSimple
+			links={navLinks}
+			actions={[{ label: navAction.label, href: navAction.href }]}
+			label="Primary"
+			contentClass={`${pageRow} py-3 max-sm:gap-3${search ? " max-sm:*:data-nav-end:flex-1 max-sm:**:data-nav-utilities:flex-1" : ""}`}
+		>
+			<a
+				slot="brand"
+				href="/"
+				class="flex min-w-0 items-center gap-2 leading-none text-fg no-underline"
+			>
+				{
+					siteLogo ? (
+						<ContentImage
+							image={{ ...siteLogo, alt: siteLogo.alt || siteTitle }}
+							priority
+							class="-my-2 block h-12 w-auto"
+						/>
+					) : (
+						<span class="truncate">{siteTitle}</span>
+					)
+				}
+			</a>
+			{
+				search && (
+					<div slot="utilities" class="min-w-24 max-sm:w-0 max-sm:flex-1 sm:w-64">
+						<SearchForm strings={{ label: "Search", placeholder: "Search...", submit: "Search", landmark: "Site search" }} />
+					</div>
+				)
+			}
+			{/* The light and dark switch: after the search box, by the menu button on phones. Below 375px the bar has no
+			room for it beside the site's name and the search box, so there it moves into the menu panel (the kit
+			Navbar's menu slot), as a button with its name. Hidden without JavaScript. Turn it off with modeSwitch in
+			src/theme.look.ts (the site then follows the system setting). */}
+			{modeSwitch && <ModeToggle slot="utilities" size="md" tone="band" class="max-[375px]:hidden" />}
+			{
+				modeSwitch && (
+					<ModeToggle slot="menu" variant="secondary" size="md" class="w-full min-[375px]:hidden">
+						Dark mode
+					</ModeToggle>
+				)
+			}
+		</NavbarSimple>
+
+		{/* The pages place their own Containers, so a band can reach the page's edges. */}
+		<main class="flex-1" data-pagefind-body={indexed ? "" : undefined}>
+			{indexed && <SearchIndex {...index} />}
+			<slot />
+		</main>
+
+		{/* The footer's words and links are in src/site.ts. Its top margin is the space under every page's last block. */}
+		<FooterColumns columns={footer.columns} label="Footer" contentClass={pageRow} class="mt-section">
+			<a slot="brand" href="/" class={cn(footerLink, "min-w-0 text-inherit")}>
+				<span class="truncate">{siteTitle}</span>
+			</a>
+			{siteTagline && <p slot="meta" class="m-0 text-pretty">{siteTagline}</p>}
+			<div slot="bottom" class={cn(pageRow, "grid gap-3 pb-10 text-on-band-muted")}>
+				<p class="m-0 text-pretty">
+					© {year}. Built with <a href={footer.builtWith.href} class={cn(footerLink, "underline")}>{footer.builtWith.label}</a>.
+				</p>
+				{/* Only while the design system pages are on: `astro dev`, or a build with ASTRONOMIC_SYSTEM=1. */}
+				{
+					systemLinks && (
+						<nav aria-labelledby="footer-system" class="flex flex-wrap gap-x-5 gap-y-1">
+							<h2 id="footer-system" class="m-0 text-small font-medium text-on-band">Design system</h2>
+							<ul role="list" class="m-0 flex list-none flex-wrap gap-x-5 gap-y-1 p-0">
+								{systemLinks.map((link) => (
+									<li>
+										<a href={link.href} class={footerLink}>{link.label}</a>
+									</li>
+								))}
+							</ul>
+						</nav>
+					)
+				}
+			</div>
+		</FooterColumns>
+
+		{BodyEnd && <BodyEnd page={page} />}
+	</body>
+</html>

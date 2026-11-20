@@ -1,0 +1,8 @@
+/* Clean: white sheets on a grey desk, crisp edges and layered shadows, one violet, Inter. Turn it on in src/styles/global.css. */
+@import "@astronomic/ui/presets/clean.css";
+
+/* The preset names its face; Astro's font API serves it as --font-inter (astro.config.mjs). */
+:root {
+  --ui-font-display: var(--font-inter, "Inter", ui-sans-serif, system-ui, sans-serif);
+  --ui-font-body: var(--font-inter, "Inter", ui-sans-serif, system-ui, sans-serif);
+}

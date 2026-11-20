@@ -1,0 +1,66 @@
+---
+/**
+ * The home page's demo look switch: six buttons that put each look on this page, so a visitor can try them. It sets
+ * data-look on <html> (Minimal removes it), which turns on that look's block in src/styles/looks.scoped.css (made by
+ * pnpm looks:scope), and swaps the marked line in LookCode.astro for the look's @import line. It does not save the
+ * choice. Minimal shows the look global.css sets, so keep global.css on Minimal while the demo is on the page. Without
+ * JavaScript the buttons stay hidden. Every look's fonts are declared in Base.astro, so the browser downloads a look's
+ * fonts only when it is picked.
+ *
+ * This is a demo, not how a site picks its look: that is the one line in src/styles/global.css. To remove the demo,
+ * delete this file, its import on the home page, and src/styles/looks.scoped.css.
+ */
+import Button from "@astronomic/ui/components/Button.astro";
+import "../styles/looks.scoped.css";
+import { home } from "../site";
+
+interface Props {
+	class?: string;
+}
+
+const { class: className } = Astro.props;
+const { looks, switchLabel } = home.look;
+const id = "look-switch-label";
+---
+
+<div data-look-switch hidden class:list={["grid gap-item", className]}>
+	<p id={id} class="m-0 text-small font-medium text-fg">{switchLabel}</p>
+	<div role="group" aria-labelledby={id} class="flex flex-wrap gap-2">
+		{
+			looks.map((look) => (
+				<Button
+					variant="secondary"
+					data-look-id={look.id}
+					aria-pressed={look.id === "minimal" ? "true" : "false"}
+					class="aria-pressed:border-fg aria-pressed:bg-fg aria-pressed:text-bg aria-pressed:hover:not-disabled:not-aria-disabled:bg-fg"
+				>
+					{look.name}
+				</Button>
+			))
+		}
+	</div>
+</div>
+
+<script>
+	// Each switch on the page (one on the home): show it, mark Minimal (the page's look until a press), then on a press
+	// set the look, mark the button and swap the code's line. Minimal's line is the example look's line commented out,
+	// as global.css has it.
+	const lineFor = (id: string, example: string) => (id === "minimal" ? `/* @import "./looks/${example}.css"; */` : `@import "./looks/${id}.css";`);
+	const show = (id: string) => {
+		for (const line of document.querySelectorAll<HTMLElement>("[data-look-line]")) line.textContent = lineFor(id, line.dataset.example ?? "soft");
+	};
+	for (const root of document.querySelectorAll<HTMLElement>("[data-look-switch]")) {
+		const buttons = [...root.querySelectorAll<HTMLButtonElement>("[data-look-id]")];
+		root.hidden = false;
+		show("minimal");
+		for (const button of buttons) {
+			button.addEventListener("click", () => {
+				const id = button.dataset.lookId ?? "minimal";
+				if (id === "minimal") document.documentElement.removeAttribute("data-look");
+				else document.documentElement.dataset.look = id;
+				for (const b of buttons) b.setAttribute("aria-pressed", String(b === button));
+				show(id);
+			});
+		}
+	}
+</script>

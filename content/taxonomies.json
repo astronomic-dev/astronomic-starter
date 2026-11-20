@@ -1,0 +1,13 @@
+{
+	"category": [
+		{ "slug": "design", "label": "Design" },
+		{ "slug": "news", "label": "News" },
+		{ "slug": "product", "label": "Product" }
+	],
+	"tag": [
+		{ "slug": "launch", "label": "Launch" },
+		{ "slug": "performance", "label": "Performance" },
+		{ "slug": "presets", "label": "Presets" },
+		{ "slug": "tips", "label": "Tips" }
+	]
+}

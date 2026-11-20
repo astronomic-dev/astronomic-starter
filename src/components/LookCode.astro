@@ -1,0 +1,22 @@
+---
+/**
+ * The one-line look switch as code: the top of src/styles/global.css, with the look's line turned on and marked. Static
+ * and monochrome (no syntax highlighter). It shows the example look's line (home.look.example in src/site.ts);
+ * LookSwitch.astro, when it runs, swaps the marked line for the look a visitor picks (Minimal: the example line
+ * commented out, as global.css has it).
+ */
+import { home } from "../site";
+
+interface Props {
+	class?: string;
+}
+
+const { class: className } = Astro.props;
+const { file, example } = home.look;
+const lines = ['@import "tailwindcss";', '@import "@astronomic/ui/tokens.css";', '@import "./fonts.css";', '@import "@astronomic/ui/theme.css";', "", "/* The look: turn one line on. */"];
+---
+
+<figure data-look-code class:list={["m-0 grid min-w-0 overflow-hidden rounded-card border-card border-solid border-border bg-surface", className]}>
+	<figcaption class="border-0 border-b-ui border-solid border-border px-4 py-2 text-small text-muted font-mono">{file}</figcaption>
+	<pre class="m-0 overflow-x-auto py-3 text-small font-mono"><code>{lines.map((l) => <span class="block px-4 text-muted">{l || " "}</span>)}<span data-look-line data-example={example} class="block border-0 border-l-2 border-solid border-fg bg-surface-2 px-4 font-semibold text-fg">{`@import "./looks/${example}.css";`}</span></code></pre>
+</figure>

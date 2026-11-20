@@ -1,0 +1,17 @@
+---
+/** The page for any address that does not exist. */
+import ArticleHeader from "@astronomic/ui/components/ArticleHeader.astro";
+import Button from "@astronomic/ui/components/Button.astro";
+import Container from "@astronomic/ui/components/Container.astro";
+import Base from "../layouts/Base.astro";
+---
+
+<Base title="Not Found">
+	<Container size="sm" class="pt-group">
+		<ArticleHeader title="Page not found" text="The page you're looking for doesn't exist. It may have moved." />
+		<div class="mt-blocks flex flex-wrap gap-3">
+			<Button href="/">Go home</Button>
+			<Button href="/guides" variant="secondary">Read the guides</Button>
+		</div>
+	</Container>
+</Base>

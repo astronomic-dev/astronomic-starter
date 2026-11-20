@@ -1,0 +1,103 @@
+---
+/**
+ * Home: the product page. Each section has its own shape, so no two in a row look alike:
+ * 1. The hero (text beside a live kit preview) and the "works with" strip.
+ * 2. Features: the heading in the start column, the items beside it.
+ * 3. See it in use: screenshots beside short text, row by row (src/assets/kit/, made by our kit shots script).
+ * 4. A light band: the steps down the start column, the demo look switch and the code beside them.
+ * 5. The latest posts.
+ * 6. The call to action (the one dark band). The footer brings its own space above, so the CTA Section has none below.
+ * The words are in src/site.ts; the posts come from content. Plain page Sections in a row share one section space;
+ * the band pads both sides (Section's tone).
+ */
+import Container from "@astronomic/ui/components/Container.astro";
+import CtaBand from "@astronomic/ui/components/CtaBand.astro";
+import Eyebrow from "@astronomic/ui/components/Eyebrow.astro";
+import FeatureGridSplit from "@astronomic/ui/components/FeatureGridSplit.astro";
+import FeatureRows from "@astronomic/ui/components/FeatureRows.astro";
+import HeroSplit from "@astronomic/ui/components/HeroSplit.astro";
+import LogoStripRow from "@astronomic/ui/components/LogoStripRow.astro";
+import PostGrid from "@astronomic/ui/components/PostGrid.astro";
+import Section from "@astronomic/ui/components/Section.astro";
+import SectionHead from "@astronomic/ui/components/SectionHead.astro";
+import Split from "@astronomic/ui/components/Split.astro";
+import StepsList from "@astronomic/ui/components/StepsList.astro";
+import { getImage } from "astro:assets";
+import { useContent } from "~/content";
+import dark from "../assets/kit/dark.webp";
+import looks from "../assets/kit/looks.webp";
+import phones from "../assets/kit/phones.webp";
+import KitImage from "../components/KitImage.astro";
+import KitPreview from "../components/KitPreview.astro";
+import LookCode from "../components/LookCode.astro";
+import LookSwitch from "../components/LookSwitch.astro";
+import Base from "../layouts/Base.astro";
+import { home } from "../site";
+import { postItem } from "../utils/posts";
+
+const content = useContent(Astro);
+const [{ items: posts }, settings] = await Promise.all([content.posts.list({ limit: 3 }), content.settings()]);
+const { hero, logos, features, inUse, steps, cta } = home;
+// The screenshots at twice their widest frame (about 600px beside the text), as WebP; FeatureRows draws a plain <img>.
+const shots = await Promise.all([looks, dark, phones].map((src) => getImage({ src, width: 1200, format: "webp" })));
+const inUseItems = inUse.items.map(({ title, text, alt }, i) => ({
+	title,
+	text,
+	image: { src: shots[i].src, width: shots[i].attributes.width as number, height: shots[i].attributes.height as number, alt },
+}));
+---
+
+<Base title={settings.title} description={settings.tagline} card>
+	<Section as="div" class="pt-group">
+		<Container class="grid gap-blocks">
+			<HeroSplit heading={hero.heading} text={hero.text} actions={hero.actions}>
+				<Eyebrow slot="eyebrow">{hero.eyebrow}</Eyebrow>
+				<KitPreview slot="media" />
+			</HeroSplit>
+			<LogoStripRow label={logos.label} items={logos.items} />
+		</Container>
+	</Section>
+
+	<Section>
+		<Container>
+			<FeatureGridSplit heading={features.heading} text={features.text} items={features.items}>
+				<Eyebrow slot="eyebrow">{features.eyebrow}</Eyebrow>
+			</FeatureGridSplit>
+		</Container>
+	</Section>
+
+	<Section>
+		<Container>
+			<FeatureRows heading={inUse.heading} text={inUse.text} items={inUseItems}>
+				<Eyebrow slot="eyebrow">{inUse.eyebrow}</Eyebrow>
+			</FeatureRows>
+		</Container>
+	</Section>
+
+	<Section tone="surface-2" aria-labelledby="home-start">
+		<Container class="grid gap-blocks">
+			<SectionHead id="home-start" heading={steps.heading} text={steps.text}>
+				<Eyebrow slot="eyebrow">{steps.eyebrow}</Eyebrow>
+			</SectionHead>
+			<Split data-home-start ratio="2/3" class="gap-group">
+				<StepsList items={steps.items} />
+				<div class="grid content-start gap-blocks">
+					<LookSwitch />
+					<LookCode />
+				</div>
+			</Split>
+		</Container>
+	</Section>
+
+	<Section>
+		<Container>
+			<PostGrid heading={home.posts.heading} viewAll={home.posts.viewAll} empty={home.posts.empty} items={posts.map(postItem)} imageComponent={KitImage}>
+				<Eyebrow slot="eyebrow">{home.posts.eyebrow}</Eyebrow>
+			</PostGrid>
+		</Container>
+	</Section>
+
+	<Section class="pb-0">
+		<Container><CtaBand heading={cta.heading} text={cta.text} actions={cta.actions} /></Container>
+	</Section>
+</Base>

@@ -1,0 +1,44 @@
+---
+/** A category: its posts, newest first, with the category filter (this one marked). */
+import { useContent } from "~/content";
+import PostArchive from "../../../components/PostArchive.astro";
+import Base from "../../../layouts/Base.astro";
+import { categoryHref, termLinks } from "../../../utils/posts";
+import { PER_PAGE, pageHref, parsePage, termPages } from "../../../utils/routes";
+
+export const getStaticPaths = () => termPages("category");
+
+const content = useContent(Astro);
+const page = parsePage(Astro.params.page);
+const term = (await content.terms("category")).find((t) => t.slug === Astro.params.slug);
+
+if (!term || !page) {
+	return Astro.rewrite("/404");
+}
+
+const [{ items: posts }, total, categories] = await Promise.all([
+	content.posts.list({ category: term.slug, limit: PER_PAGE, offset: (page - 1) * PER_PAGE }),
+	content.posts.count({ category: term.slug }),
+	content.terms("category"),
+]);
+if (page > 1 && posts.length === 0) {
+	return Astro.rewrite("/404");
+}
+const base = `/category/${term.slug}`;
+// Page 1's own share card only when publicPages lists it: no post yet, or some post not hidden from search engines.
+const all = page === 1 ? (await content.posts.list({ category: term.slug, seo: true })).items : [];
+const card = page === 1 && (all.length === 0 || all.some((post) => !post.seo?.noindex));
+---
+
+<Base title={`${term.label} posts`} description={`Posts in ${term.label}`} card={card}>
+	<PostArchive
+		title={term.label}
+		text={`Posts filed under ${term.label}.`}
+		posts={posts}
+		empty="No posts in this category yet."
+		filter={[{ label: "All posts", href: "/posts" }, ...termLinks(categories, categoryHref, term.slug)]}
+		page={page}
+		pages={Math.max(1, Math.ceil(total / PER_PAGE))}
+		href={(n) => pageHref(base, n)}
+	/>
+</Base>

@@ -1,0 +1,76 @@
+---
+/**
+ * A post: the kit header (topic, date, title, standfirst, byline, photo), the text in the kit's Prose, the tags, and
+ * the author box. A source with managed widgets (EmDash) shows its sidebar area under the post.
+ */
+import ArticleHeader from "@astronomic/ui/components/ArticleHeader.astro";
+import AuthorBox from "@astronomic/ui/components/AuthorBox.astro";
+import Byline from "@astronomic/ui/components/Byline.astro";
+import Container from "@astronomic/ui/components/Container.astro";
+import FilterNav from "@astronomic/ui/components/FilterNav.astro";
+import Prose from "@astronomic/ui/components/Prose.astro";
+import { searchIgnore, useContent } from "~/content";
+import ContentImage from "../../components/ContentImage.astro";
+import RichText from "../../components/RichText.astro";
+import Base from "../../layouts/Base.astro";
+import { authorImage, tagHref, termLinks, topicOf } from "../../utils/posts";
+import { slugPaths } from "../../utils/routes";
+
+export const getStaticPaths = () => slugPaths("posts");
+
+const content = useContent(Astro);
+const post = Astro.params.slug ? await content.posts.get(Astro.params.slug) : undefined;
+
+if (!post) {
+	return Astro.rewrite("/404");
+}
+
+const { WidgetArea } = content.components;
+// The author box and the widget area are about other things: static search leaves them out of this page's entry.
+const ignore = searchIgnore(content);
+const author = post.author;
+const photo = authorImage(author);
+---
+
+<Base
+	title={post.seo?.title ?? post.title}
+	description={post.seo?.description ?? post.excerpt}
+	image={post.seo?.image ?? post.image?.src}
+	imageAlt={post.seo?.image ? undefined : post.image?.alt}
+	canonical={post.seo?.canonical}
+	entry={post}
+	index={{ kind: "posts", title: post.title, summary: post.excerpt }}
+	card
+	type="article"
+>
+	<Container size="sm" class="pt-group">
+		<article>
+			<ArticleHeader title={post.title} text={post.excerpt} date={post.date} topic={topicOf(post)}>
+				{author && <Byline slot="byline" authors={[{ name: author.name, image: photo }]} />}
+				{
+					post.image && (
+						<div slot="media" {...post.edit?.image} class="overflow-hidden rounded-card [&_img]:block [&_img]:h-auto [&_img]:w-full">
+							<ContentImage image={post.image} priority />
+						</div>
+					)
+				}
+			</ArticleHeader>
+
+			<Prose class="site-prose mt-blocks">
+				<RichText value={post.body} />
+			</Prose>
+
+			{post.tags.length > 0 && <FilterNav items={termLinks(post.tags, tagHref)} label="Tags" class="mt-blocks" />}
+
+			{author && <AuthorBox {...ignore} name={author.name} role={author.role} image={photo} headingTag="h2" class="mt-group border-t-ui border-solid border-border pt-blocks" />}
+		</article>
+
+		{
+			WidgetArea && (
+				<aside data-parity-skip {...ignore} aria-label="More" class="mt-group border-t-ui border-solid border-border pt-blocks">
+					<WidgetArea name="sidebar" />
+				</aside>
+			)
+		}
+	</Container>
+</Base>

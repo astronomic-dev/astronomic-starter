@@ -1,0 +1,35 @@
+---
+/** Guides: every series and its parts, in order. A series with no guide yet is left out. */
+import ArticleHeader from "@astronomic/ui/components/ArticleHeader.astro";
+import Container from "@astronomic/ui/components/Container.astro";
+import IndexList from "@astronomic/ui/components/IndexList.astro";
+import { useContent } from "~/content";
+import Base from "../../layouts/Base.astro";
+import { guideHref } from "../../utils/posts";
+
+const content = useContent(Astro);
+const [{ items: series }, { items: guides }] = await Promise.all([content.series.list(), content.guides.list()]);
+// Both come sorted: the series by title, the guides by series title, part and slug.
+const groups = series
+	.map((s) => ({ series: s, parts: guides.filter((g) => g.series.ref.slug === s.slug) }))
+	.filter((g) => g.parts.length > 0);
+const intro = "Step-by-step guides to set up and build your site.";
+---
+
+<Base title="Guides" description={intro} card>
+	<Container class="pt-group">
+		<ArticleHeader title="Guides" text={intro} />
+		{groups.length === 0 && <p class="mt-blocks text-muted">No guides yet.</p>}
+		{
+			groups.map(({ series: s, parts }) => (
+				<IndexList
+					id={s.slug}
+					heading={s.title}
+					text={s.description}
+					items={parts.map((g) => ({ label: g.title, href: guideHref(g.slug), meta: `Part ${g.series.part}` }))}
+					class="mt-group scroll-mt-6"
+				/>
+			))
+		}
+	</Container>
+</Base>
